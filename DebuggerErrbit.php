@@ -202,7 +202,15 @@ class Debugger
 	/***************************** TABLE IMPORT *******************************/
 	
 	// @TODO: add import database table code
-	public static function createDbTable() {
-		
+	public static function createDbTable($table) {
+		// phinx table
+		$table->addColumn('data', 'text')
+			->addColumn('description', 'text')
+			->addColumn('method', 'string')
+			->addColumn('created', 'datetime')
+			->addColumn('flag', 'string')
+			->addColumn('ip', 'string')
+			->addIndex('created')
+			->save();
 	}
 }
