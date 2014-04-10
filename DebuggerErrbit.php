@@ -2,7 +2,7 @@
 
 namespace DebuggerErrbit;
 
-use Nette\Diagnostics\Debugger,
+use Nette\Diagnostics\Debugger as NDebugger,
 	Errbit;
 
 class Debugger
@@ -49,7 +49,6 @@ class Debugger
 	public static function init($container, $sendErrors = true) {
 		self::$sendErrors = $sendErrors;
 		self::$consoleMode = $container->parameters['consoleMode'];
-		self::$logTable = $container->database->table('log');
 		self::$remoteAddress = $container->httpRequest->getRemoteAddress();
 		
 		// Init errbit
@@ -67,20 +66,29 @@ class Debugger
 		set_error_handler(array(__CLASS__, '_errorHandler'));
 	}
 	
+	/** 
+	 * Setup log table
+	 * 
+	 * @param \Nette\Database\Table\Selection $logTable
+	 */
+	public static function setLogTable(\Nette\Database\Table\Selection $logTable) {
+		self::$logTable = $logTable;
+	}
+	
 	/**
 	 * Wrapper for Debugger::log() method
 	 * @param string $message
 	 * @param int $priority
 	 */
-	public static function log($message, $priority = Debugger::INFO) {
-		Debugger::log($message, $priority);
+	public static function log($message, $priority = NDebugger::INFO) {
+		NDebugger::log($message, $priority);
 		
 		// Log to errbit
 		if(!($message instanceof \Exception)) {
 			$message = new \Exception($message);
 		}		
 		
-		if(self::$sendErrors && ($priority == Debugger::ERROR)) {
+		if(self::$sendErrors && ($priority == NDebugger::ERROR)) {
 			Errbit::instance()->notify($message);
 		}
 	}
@@ -92,6 +100,10 @@ class Debugger
 	 * @param mixed $data
 	 */
 	public static function dbLog($flag, $method, $description, $data = null) {	
+		if(!self::$logTable) {
+			NDebugger::log('No log table given', NDebugger::ERROR);
+		}
+		
 		try {
 			self::$logTable->insert(array(
 				'data' => $data ? serialize($data) : null,
@@ -147,7 +159,7 @@ class Debugger
 		}
 		
 		// Log by nette debugger
-		Debugger::_exceptionHandler($exception, $shutdown);
+		NDebugger::_exceptionHandler($exception, $shutdown);
 	}
 
 	/**
@@ -184,6 +196,13 @@ class Debugger
 		}
 		
 		// Log by nette debugger
-		Debugger::_errorHandler($severity, $message, $file, $line, $context);
+		NDebugger::_errorHandler($severity, $message, $file, $line, $context);
+	}
+	
+	/***************************** TABLE IMPORT *******************************/
+	
+	// @TODO: add import database table code
+	public static function createDbTable() {
+		
 	}
 }
