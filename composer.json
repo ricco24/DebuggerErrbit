@@ -5,6 +5,6 @@
 	"minimum-stability": "dev",
 	"require": {
         "php": ">=5.3.0",
-        "flippa-official/errbit-php": "@dev"
+        "kelemen/errbit-php": "1.0.1"
     }
 }
