@@ -25,7 +25,7 @@ class Debugger
 		WARNING = 'warning',
 		ERROR = 'error',
 		CRITICAL = 'critical';
-	
+		
 	/** @var array					Allowed severity for error handler */
 	public static $severity = array(
 		E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR, E_DEPRECATED, E_USER_DEPRECATED
